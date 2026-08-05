@@ -111,7 +111,7 @@ config:
   - '{"name":"lora1","path":"/path/to/lora1"}'
   - '{"name":"lora2","path":"/path/to/lora2"}'
   mode: "echo"
-  timeToFirstToken: 500
-  interTokenLatency: 50 
-  kvCacheTransferLatency: 50
+  timeToFirstToken: "500ms"
+  interTokenLatency: "50ms"
+  kvCacheTransferLatency: "50ms"
   seed: 100100100
