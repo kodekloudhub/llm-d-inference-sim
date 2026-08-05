@@ -51,6 +51,10 @@ spec:
         - "8000"
         - "--render-url"
         - "http://localhost:8082"
+        # Without this the prefix-cache subsystem never starts, so
+        # vllm:prefix_cache_hits, vllm:prefix_cache_queries and a moving
+        # vllm:kv_cache_usage_perc are absent from /metrics entirely.
+        - "--enable-kvcache"
         env:
           - name: POD_NAME
             valueFrom:
