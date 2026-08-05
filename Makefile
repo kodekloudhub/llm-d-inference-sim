@@ -276,6 +276,19 @@ clean-dev-env-minikube: ## Cleanup minikube setup (delete profile ${MINIKUBE_PRO
 	@echo "INFO: cleaning up minikube profile ${MINIKUBE_PROFILE}"
 	minikube delete --profile ${MINIKUBE_PROFILE}
 
+LOAD_DURATION ?= 300
+LOAD_CONCURRENCY ?= 3
+
+# Generate traffic against a running simulator, so that the rate() based
+# Prometheus metrics and Grafana dashboards have data to show
+.PHONY: generate-load
+generate-load: ## Generate steady traffic against a simulator on localhost:${HOST_PORT}
+	@printf "\033[33;1m==== Generating load ====\033[0m\n"
+	TARGET_URL=http://localhost:${HOST_PORT} \
+	MODEL_NAME=${MODEL_NAME} \
+	DURATION=${LOAD_DURATION} \
+	CONCURRENCY=${LOAD_CONCURRENCY} \
+	./generate-load.sh
 
 .PHONY: run-render
 run-render: 
