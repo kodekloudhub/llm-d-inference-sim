@@ -221,6 +221,62 @@ To delete the cluster, run:
 make clean-dev-env-kind
 ```
 
+## Testing on Minikube
+
+### Installation
+
+To run the vLLM simulator in a Minikube cluster, first build the simulator image,
+then deploy:
+```bash
+make image-build
+make dev-env-minikube
+```
+
+Check [Makefile](Makefile) for environment variables to tune the process.
+For example:
+```bash
+MINIKUBE_PROFILE=mytest MINIKUBE_MEMORY=4096 make dev-env-minikube
+```
+
+With the `docker` or `podman` driver the simulator's NodePort is published on the
+host, so it is reachable at `http://localhost:30080` exactly as on Kind:
+
+```bash
+curl -X POST http://localhost:30080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```
+
+On the VM drivers (`MINIKUBE_DRIVER=qemu`, etc.) host ports cannot be published;
+the script prints the `minikube ip`-based URL to use instead.
+
+`HOST_PORT` must stay within the NodePort range (30000-32767), since
+[deploy/deployments.yaml](deploy/deployments.yaml) pins the Service's `nodePort`
+to it.
+
+Note that a pre-existing profile keeps the port mapping it was created with. If
+`http://localhost:30080` is unreachable against a cluster that was not created by
+this script, recreate it with `make clean-dev-env-minikube` first.
+
+Building the image directly into the cluster's Docker daemon also works, in which
+case the script detects the image and skips the load step:
+```bash
+eval $(minikube -p llm-d-inference-sim-dev docker-env)
+make image-build
+```
+
+### Cleanup
+
+To delete the cluster, run:
+```bash
+make clean-dev-env-minikube
+```
+
 
 
 

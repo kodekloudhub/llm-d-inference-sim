@@ -250,6 +250,32 @@ clean-dev-env-kind: ## Cleanup kind setup (delete cluster ${KIND_CLUSTER_NAME})
 	@echo "INFO: cleaning up kind cluster ${KIND_CLUSTER_NAME}"
 	kind delete cluster --name ${KIND_CLUSTER_NAME}
 
+MINIKUBE_PROFILE ?= ${PROJECT_NAME}-dev
+MINIKUBE_DRIVER ?= docker
+MINIKUBE_CPUS ?= 4
+MINIKUBE_MEMORY ?= 8192
+MINIKUBE_DISK_SIZE ?= 40g
+
+# Deploy the simulator and vllm renderer on minikube
+.PHONY: dev-env-minikube
+dev-env-minikube: ## Deploy the simulator and vllm renderer on minikube (profile ${MINIKUBE_PROFILE})
+	@printf "\033[33;1m==== Deploying on minikube ====\033[0m\n"
+	CLUSTER_NAME=${MINIKUBE_PROFILE} \
+	HOST_PORT=${HOST_PORT} \
+	MODEL_NAME=${MODEL_NAME} \
+	VLLM_SIMULATOR_IMAGE=${IMG} \
+	VLLM_RENDER_IMAGE=${VLLM_RENDER_IMAGE} \
+	MINIKUBE_DRIVER=${MINIKUBE_DRIVER} \
+	MINIKUBE_CPUS=${MINIKUBE_CPUS} \
+	MINIKUBE_MEMORY=${MINIKUBE_MEMORY} \
+	MINIKUBE_DISK_SIZE=${MINIKUBE_DISK_SIZE} \
+	./minikube-deploy.sh
+
+.PHONY: clean-dev-env-minikube
+clean-dev-env-minikube: ## Cleanup minikube setup (delete profile ${MINIKUBE_PROFILE})
+	@echo "INFO: cleaning up minikube profile ${MINIKUBE_PROFILE}"
+	minikube delete --profile ${MINIKUBE_PROFILE}
+
 
 .PHONY: run-render
 run-render: 
