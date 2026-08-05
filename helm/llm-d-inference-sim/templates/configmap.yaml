@@ -17,8 +17,8 @@ data:
     lora-modules:
     {{- toYaml .Values.config.loraModules | nindent 4 }}
     mode: "{{ .Values.config.mode }}"
-    time-to-first-token: {{ .Values.config.timeToFirstToken }}
-    inter-token-latency: {{ .Values.config.interTokenLatency }}
-    kv-cache-transfer-latency: {{ .Values.config.kvCacheTransferLatency }}
+    time-to-first-token: {{ .Values.config.timeToFirstToken | quote }}
+    inter-token-latency: {{ .Values.config.interTokenLatency | quote }}
+    kv-cache-transfer-latency: {{ .Values.config.kvCacheTransferLatency | quote }}
     seed: {{ .Values.config.seed }}
     render-url: "http://localhost:{{ .Values.vllmRender.port }}"
